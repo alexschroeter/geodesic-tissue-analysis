@@ -300,5 +300,12 @@ ENV MHLM_CONTEXT=MATLAB_DOCKERHUB
 COPY App.m /home/matlab/
 COPY .arkitekt_next /home/matlab/.arkitekt_next
 COPY app.py /home/matlab/
+COPY karl.m /home/matlab/
 
-RUN pip install arkitekt-next
+RUN sudo apt update && \
+	sudo apt install -y software-properties-common && \
+	sudo add-apt-repository ppa:deadsnakes/ppa && \
+	sudo apt install -y python3.11-full epiphany-browser && \
+	curl https://bootstrap.pypa.io/get-pip.py | sudo python3.11
+
+RUN pip3.11 install arkitekt-next[all] tifffile
