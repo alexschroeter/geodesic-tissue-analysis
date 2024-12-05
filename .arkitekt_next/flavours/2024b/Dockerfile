@@ -3,7 +3,7 @@
 # This Dockerfile allows you to build either the MATLAB Container image or the MATLAB Deep Learning Container image.
 
 # To specify which MATLAB release to install in the container, edit the value of the MATLAB_RELEASE argument.
-ARG MATLAB_RELEASE="R2021b"
+ARG MATLAB_RELEASE="R2024b"
 
 # Specify the additional list of toolboxes and support packages to install into the
 # mathworks/matlab-deep-learning Docker image.
@@ -19,8 +19,8 @@ ARG MATLAB_DEPS_IMAGE=""
 ARG MATHWORKS_SERVICE_HOST_INSTALL_URL="https://www.mathworks.com/MathWorksServiceHost/glnxa64/install_managed_msh.sh"
 
 # Specify any additional packages to install via apt-get.
-ARG APT_ADDITIONAL_PACKAGES="git python3.8-venv libpython3.8 build-essential"
-ARG APT_ADDITIONAL_PACKAGES_VNC=""
+ARG APT_ADDITIONAL_PACKAGES="git build-essential"
+ARG APT_ADDITIONAL_PACKAGES_VNC="tigervnc-tools"
 
 # Specify MATLAB Install Location.
 ARG MATLAB_INSTALL_LOCATION="/opt/matlab/${MATLAB_RELEASE}"
@@ -28,31 +28,21 @@ ARG MATLAB_INSTALL_LOCATION="/opt/matlab/${MATLAB_RELEASE}"
 # When you start the build stage, this Dockerfile by default uses the Ubuntu-based matlab-deps image.
 # To check the available matlab-deps images, see: https://hub.docker.com/r/mathworks/matlab-deps
 
-#FROM ${MATLAB_DEPS_IMAGE}:${MATLAB_RELEASE} AS build
-FROM ubuntu:20.04 AS build
+FROM ubuntu:24.04 AS build
 
-LABEL maintainer="The MathWorks, Inc."
+LABEL maintainer="The MathWorks"
 
-COPY base-dependencies_2021b.txt /tmp/base-dependencies.txt
+COPY base-dependencies_2024b.txt /tmp/base-dependencies.txt
 
 RUN export DEBIAN_FRONTEND=noninteractive \
     && apt-get update \
     && apt-get install --no-install-recommends -y `cat /tmp/base-dependencies.txt` \
-    && apt-get clean && apt-get -y autoremove \
+    && apt-get clean \
+    && apt-get -y autoremove \
     && rm -rf /var/lib/apt/lists/*
 
 RUN [ -d /usr/share/X11/xkb ] || mkdir -p /usr/share/X11/xkb
 
-# Install patched glibc - See https://github.com/mathworks/build-glibc-bz-19329-patch
-# Note: base-dependencies.txt includes libcrypt-dev and linux-libc-dev to enable installation of patched -dev packages
-WORKDIR /packages
-RUN export DEBIAN_FRONTEND=noninteractive &&\
-    wget -q https://github.com/mathworks/build-glibc-bz-19329-patch/releases/download/ubuntu-focal/all-packages.tar.gz &&\
-    tar -x -f all-packages.tar.gz \
-        --exclude glibc-*.deb \
-        --exclude libc6-dbg*.deb &&\
-    apt-get install --yes --no-install-recommends ./*.deb &&\
-    rm -fr /packages
 WORKDIR /
 
 ARG MATLAB_RELEASE
@@ -301,12 +291,5 @@ COPY --chown=matlab:matlab App.m /home/matlab/
 COPY --chown=matlab:matlab .arkitekt_next /home/matlab/.arkitekt_next
 COPY --chown=matlab:matlab app.py /home/matlab/
 COPY --chown=matlab:matlab karl.m /home/matlab/
-COPY --chown=matlab:matlab geodesictissueanalysis /home/matlab/
 
-RUN sudo apt update && \
-	sudo apt install -y software-properties-common && \
-	sudo add-apt-repository ppa:deadsnakes/ppa && \
-	sudo apt install -y python3.11-full epiphany-browser && \
-	curl https://bootstrap.pypa.io/get-pip.py | sudo python3.11
-
-RUN pip3.11 install arkitekt-next[all] tifffile
+RUN pip install --break-system-packages arkitekt-next[all] tifffile

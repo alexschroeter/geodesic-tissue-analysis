@@ -3,7 +3,10 @@ app = App();
 fprintf('Hello from MATLAB!\n');
 
 app.register(@segmentImages, 'segmentImagesdddd', {app.omeTiffPort('imagePath')}, {app.omeTiffPort('outputPath')});
-fprintf('App registered\n');
+
+app.register(@ZoeSegmenticSegmentation, 'ZoeSemanticSegmentation', {app.omeTiffPort('imagePath')}, {app.omeTiffPort('outputPath')});
+
+fprintf('Apps registered\n');
 app.run();
 fprintf('App closed\n');
 
@@ -26,3 +29,21 @@ function outputPath = segmentImages(imagePath)
     outputPath = imagePath;
 end
 
+function outputPath = ZoeSemanticSegmentation(imagePath)
+
+    addpath("scripts");
+    SemanticSegmentation( ...
+	tifFile, ...
+	csvDir, ...
+	parameters.uniqueName, ...
+	parameters.semseg.beadthresh, ...
+	parameters.semseg.beadradius, ...
+	parameters.semseg.BWthreshMan, ...
+	parameters.semseg.alpha, ...
+	parameters.semseg.alphaRegionThreshold, ...
+	parameters.createMesh ...
+    );
+    % Frist Step in the Pipeline
+    outputPath = csvPath;
+
+end
