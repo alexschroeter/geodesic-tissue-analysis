@@ -302,6 +302,7 @@ COPY --chown=matlab:matlab .arkitekt_next /home/matlab/.arkitekt_next
 COPY --chown=matlab:matlab app.py /home/matlab/
 COPY --chown=matlab:matlab karl.m /home/matlab/
 COPY --chown=matlab:matlab geodesictissueanalysis /home/matlab/
+COPY --chown=matlab:matlab example_data /home/matlab/
 
 RUN sudo apt update && \
 	sudo apt install -y software-properties-common && \
@@ -309,4 +310,4 @@ RUN sudo apt update && \
 	sudo apt install -y python3.11-full epiphany-browser && \
 	curl https://bootstrap.pypa.io/get-pip.py | sudo python3.11
 
-RUN pip3.11 install arkitekt-next[all] tifffile
+RUN pip3.11 install arkitekt-next[all]==0.8.60 tifffile pymeshlab

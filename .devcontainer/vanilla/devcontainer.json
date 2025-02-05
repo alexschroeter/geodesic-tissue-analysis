@@ -4,7 +4,9 @@
         "dockerfile": "/home/aschroeter/src/geodesic-tissue-analysis/.arkitekt_next/flavours/vanilla/Dockerfile",
         "context": "../.."
     },
+    "forwardPorts": [5901, 6080],
     "runArgs": [
-        "--network=host"
-    ]
+        "--network=host",
+    ],
+    "postStartCommand":["tini", "--", "/bin/run.sh", "-vnc"]
 }

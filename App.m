@@ -33,7 +33,25 @@ classdef App < handle
                 'description', description, 'scope', 'LOCAL', ...
                 'kind', 'STRUCTURE', 'identifier', 'OME_TIFF');
         end
+
+        function port = MeshPort(obj, name, description)
+            if nargin < 3
+                description = '';
+            end
+            port = struct('key', name, 'nullable', false, ...
+                'description', description, 'scope', 'LOCAL', ...
+                'kind', 'STRUCTURE', 'identifier', 'MESH');
+        end
         
+        function port = CSVPort(obj, name, description)
+            if nargin < 3
+                description = '';
+            end
+            port = struct('key', name, 'nullable', false, ...
+                'description', description, 'scope', 'LOCAL', ...
+                'kind', 'STRUCTURE', 'identifier', 'CSV');
+        end
+
         function sendMessage(obj, message)
             fprintf('%s%s\n', obj.magicWord + "||", jsonencode(struct("message", message)) + "||");
         end
