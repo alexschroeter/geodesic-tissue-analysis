@@ -145,7 +145,7 @@ def run(script: str):
         print(x)
 
 
-    rekuest.agent.register_extension("cli", CLIExtension(run_script=f'''/bin/run.sh -nodesktop -nosplash -nodisplay -r "run('/home/matlab/{script}'); exit;"''', on_process_stdout=on_print, initial_timeout=60))
+    rekuest.agent.extension_registry.register(CLIExtension(run_script=f'''/bin/run.sh -nodesktop -nosplash -nodisplay -r "run('/home/matlab/{script}'); exit;"''', on_process_stdout=on_print, initial_timeout=60))
 
     with app:
         try:
